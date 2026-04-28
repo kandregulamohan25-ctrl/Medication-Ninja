@@ -1,0 +1,98 @@
+.analytics-card {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, var(--card-bg) 0%, rgba(255, 255, 255, 0.4) 100%);
+}
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.level-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--light-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+}
+
+.circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-height: 1;
+}
+
+.circle-text strong {
+    font-size: 1.5rem;
+    display: block;
+    color: var(--text-color);
+}
+
+.circle-text small {
+    font-size: 0.7rem;
+    color: var(--light-text);
+}
+
+/* XP Bar */
+.xp-section {
+    width: 100%;
+}
+
+.xp-bar-container {
+    width: 100%;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD166, #FF9F1C);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 209, 102, 0.5);
+}
+
+.xp-text {
+    font-size: 0.8rem;
+    color: var(--light-text);
+}

@@ -1,0 +1,193 @@
+:root {
+  /* High-Key Ninja Palette - Bright & Vibrant */
+  --primary-color: #2B2D42;
+  --secondary-color: #5D6D7E;
+  --accent-color: #FF3366;
+  /* Punchier Red */
+
+  /* Bright, airy gradient */
+  --background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+
+  /* Glassmorphism - More opaque for brightness */
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: 1px solid rgba(255, 255, 255, 0.9);
+  --glass-blur: blur(16px);
+
+  --text-color: #1A202C;
+  --light-text: #4A5568;
+
+  /* Inputs */
+  --input-bg: rgba(255, 255, 255, 0.5);
+  --input-bg-focus: #ffffff;
+  --input-text: #1A202C;
+
+  /* Alert Colors */
+  --danger-color: #FF4757;
+  --warning-color: #FFA502;
+  --success-color: #2ED573;
+
+  /* Spacing & Layout */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --border-radius: 24px;
+  --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  /* Lighter shadow */
+  --shadow-hover: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+
+  /* Typography */
+  --font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  --heading-font: 'Space Grotesk', system-ui, sans-serif;
+}
+
+[data-theme='dark'] {
+  --primary-color: #F7FAFC;
+  --secondary-color: #A0AEC0;
+  --accent-color: #FF3366;
+  --background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
+  /* Deep but rich blue */
+  --card-bg: rgba(23, 25, 35, 0.7);
+  --card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --text-color: #F7FAFC;
+  --light-text: #CBD5E0;
+  --shadow-soft: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  
+  /* Inputs */
+  --input-bg: rgba(0, 0, 0, 0.3);
+  --input-bg-focus: rgba(0, 0, 0, 0.6);
+  --input-text: #F7FAFC;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-image: var(--background-image);
+  background-attachment: fixed;
+  background-size: cover;
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Global Image Quality Optimizations */
+img {
+  /* Avoid scaling images beyond original size while keeping responsive */
+  max-width: 100%;
+  height: auto;
+  
+  /* Proper object-fit */
+  object-fit: cover;
+  
+  /* CSS image-rendering optimization */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Hardware acceleration to prevent sub-pixel blurring during animations */
+  transform: translateZ(0);
+  
+  /* Reduce blur using contrast + sharpening-like filters */
+  filter: contrast(1.05) saturate(1.05);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font);
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 2.5rem; /* Consistent, generous padding */
+  margin-bottom: 2.5rem; /* Improved spacing between sections */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px); /* Noticeable lift effect */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12); /* Deep shadow on hover */
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-family: var(--heading-font);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF3366 0%, #FF5E78 100%);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 51, 102, 0.4);
+  /* Glow effect */
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  backdrop-filter: blur(4px);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: var(--card-bg);
+  /* Contrast text */
+}
+
+/* Ninja Utilities */
+.ninja-badge {
+  background: var(--primary-color);
+  color: var(--card-bg);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Scrollbar Polish */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}

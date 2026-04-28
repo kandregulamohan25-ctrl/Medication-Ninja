@@ -1,0 +1,39 @@
+.streak-container {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+    padding: 2px 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    cursor: help;
+}
+
+.streak-icon {
+    font-size: 1rem;
+    animation: flame-flicker 1.5s infinite alternate;
+}
+
+.streak-count {
+    font-weight: 800;
+    color: #D90429;
+    font-size: 0.9rem;
+}
+
+@keyframes flame-flicker {
+    0% {
+        transform: scale(1) rotate(-5deg);
+        filter: brightness(100%);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(5deg);
+        filter: brightness(120%);
+    }
+
+    100% {
+        transform: scale(1) rotate(-5deg);
+        filter: brightness(100%);
+    }
+}

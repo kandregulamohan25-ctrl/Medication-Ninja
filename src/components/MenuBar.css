@@ -1,0 +1,202 @@
+.menu-toggle {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    /* Moved to Left to avoid Ninja */
+    width: 60px;
+    height: 60px;
+    background: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2000;
+    box-shadow: 0 4px 15px rgba(239, 35, 60, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1);
+}
+
+.menu-toggle:active {
+    transform: scale(0.95);
+}
+
+.hamburger {
+    width: 24px;
+    height: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: white;
+    /* White icon on red button */
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Animate Hamburger to X */
+.hamburger.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Overlay */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+/* Sidebar - Slide from Left */
+.menu-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Back to Left */
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    background: var(--card-bg);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.menu-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.btn-close-menu {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--light-text);
+}
+
+.user-profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent-color), #D90429);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(239, 35, 60, 0.4);
+}
+
+.user-stats-mini {
+    color: var(--light-text);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    margin-top: 1rem;
+}
+
+.menu-item {
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 1.1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--font-family);
+    color: var(--text-color);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-item:hover {
+    background: rgba(150, 150, 150, 0.1);
+    transform: translateX(6px);
+}
+
+.menu-item.active {
+    background: linear-gradient(90deg, rgba(255, 51, 102, 0.1) 0%, transparent 100%);
+    color: var(--accent-color);
+    font-weight: 700;
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 12px 12px 0;
+}
+
+.menu-item.logout {
+    color: #EF233C;
+    margin-top: auto;
+    font-weight: 600;
+}
+
+.menu-item.logout:hover {
+    background: rgba(239, 35, 60, 0.1);
+    transform: translateX(6px);
+}
+
+.divider {
+    height: 1px;
+    background: rgba(150, 150, 150, 0.2);
+    margin: 1rem 0;
+}
+
+.menu-footer {
+    text-align: center;
+    color: var(--light-text);
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}

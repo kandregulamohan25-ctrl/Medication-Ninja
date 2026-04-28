@@ -1,0 +1,37 @@
+.education-section {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.education-section h2 {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    color: var(--primary-color);
+}
+
+.edu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.edu-item h3 {
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--secondary-color);
+}
+
+.edu-item ul {
+    padding-left: 1.2rem;
+}
+
+.edu-item li {
+    margin-bottom: 0.25rem;
+}
+
+.edu-item.highlight {
+    background-color: #E0F7FA;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+}

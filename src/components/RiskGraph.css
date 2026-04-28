@@ -1,0 +1,41 @@
+.risk-graph-card {
+    margin-top: var(--spacing-lg);
+    background: var(--card-bg);
+    padding: 1.5rem;
+}
+
+.risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.risk-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.risk-badge.low {
+    background: rgba(46, 196, 182, 0.2);
+    color: var(--success-color);
+}
+
+.risk-badge.high {
+    background: rgba(239, 35, 60, 0.2);
+    color: var(--accent-color);
+}
+
+.graph-container {
+    width: 100%;
+}
+
+.graph-note {
+    font-size: 0.75rem;
+    color: var(--light-text);
+    text-align: center;
+    margin-top: 1rem;
+    font-style: italic;
+}

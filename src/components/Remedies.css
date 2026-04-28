@@ -1,0 +1,91 @@
+.remedies-card {
+    margin-top: var(--spacing-lg);
+    background: linear-gradient(135deg, #fff 0%, #f0f7ff 100%);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.remedies-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.ai-badge {
+    background: #E0E7FF;
+    color: #4361EE;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: 1px solid #C7D2FE;
+}
+
+.ai-subtitle {
+    font-size: 0.9rem;
+    color: var(--light-text);
+    margin-bottom: 1.5rem;
+}
+
+.remedies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.remedy-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s;
+}
+
+.remedy-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-speak {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: transform 0.2s, opacity 0.2s;
+    margin-left: auto;
+    /* Push to right */
+}
+
+.btn-speak:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.remedy-icon {
+    font-size: 1.5rem;
+    background: var(--bg-color);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.remedy-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+    color: var(--primary-color);
+}
+
+.remedy-info p {
+    font-size: 0.8rem;
+    color: var(--light-text);
+    line-height: 1.3;
+}

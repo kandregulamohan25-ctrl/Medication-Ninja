@@ -1,0 +1,62 @@
+.install-prompt {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    padding: var(--spacing-md);
+    border-radius: 50px;
+    box-shadow: var(--shadow-hover);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    z-index: 1000;
+    border: 1px solid #E9ECEF;
+    min-width: 320px;
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.install-icon {
+    font-size: 1.5rem;
+}
+
+.install-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.install-text strong {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.install-text span {
+    font-size: 0.75rem;
+    color: var(--light-text);
+}
+
+.btn-sm {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--light-text);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 var(--spacing-sm);
+}
+
+.btn-close:hover {
+    color: var(--text-color);
+}

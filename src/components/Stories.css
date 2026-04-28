@@ -1,0 +1,88 @@
+.stories-section {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stories-section h2 {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-color);
+}
+
+.story-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+    .story-container {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.story-card {
+    flex: 1;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.story-card.wise {
+    border-top: 4px solid var(--success-color);
+}
+
+.story-card.foolish {
+    border-top: 4px solid var(--danger-color);
+}
+
+.story-role {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.story-card.wise .story-role {
+    color: var(--success-color);
+}
+
+.story-card.foolish .story-role {
+    color: var(--danger-color);
+}
+
+.story-content p {
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.outcome {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.outcome.success {
+    background: rgba(6, 214, 160, 0.1);
+    color: #048a66;
+    border: 1px solid rgba(6, 214, 160, 0.2);
+}
+
+.outcome.failure {
+    background: rgba(217, 4, 41, 0.1);
+    color: #a3031e;
+    border: 1px solid rgba(217, 4, 41, 0.2);
+}
+
+.story-vs {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--light-text);
+    text-align: center;
+}

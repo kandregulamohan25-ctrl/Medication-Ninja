@@ -1,0 +1,72 @@
+.lifetime-card {
+    background: linear-gradient(135deg, #1A1B2E 0%, #16213e 100%);
+    /* Dark theme by default for this card */
+    color: white;
+    margin-top: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.lifetime-card h3 {
+    color: white;
+    margin: 0;
+}
+
+.lifetime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.coming-soon-badge {
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stats-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2ec4b6;
+}
+
+.stats-details {
+    flex: 1;
+}
+
+.stats-details p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+}
+
+.danger-text {
+    color: #ef233c;
+}
+
+.stats-details small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    line-height: 1.3;
+}
