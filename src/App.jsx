@@ -27,23 +27,19 @@ import './App.css';
 // Simple sound effect
 const SOUND_POP = 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+const pageTransition = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+  exit: { opacity: 0, y: -16, transition: { duration: 0.2 } }
 };
 
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 100 }
-  }
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.08 } }
+};
+
+const staggerItem = {
+  initial: { y: 20, opacity: 0 },
+  animate: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
 };
 
 const Dashboard = () => {
@@ -51,6 +47,7 @@ const Dashboard = () => {
   const [medicines, setMedicines] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState('home');
 
   const [playPop] = useSound(SOUND_POP);
 
@@ -72,8 +69,6 @@ const Dashboard = () => {
       const finalMeds = medsData || [];
       const finalHist = histData || [];
 
-      console.log(`⚡ [Supabase] Fetched records: ${finalMeds.length} medicines, ${finalHist.length} history.`);
-
       setMedicines(finalMeds);
       setHistory(finalHist);
       localStorage.setItem('ninja_medicines', JSON.stringify(finalMeds));
@@ -91,25 +86,15 @@ const Dashboard = () => {
 
   const addMedicine = async (medicine) => {
     const newMed = { ...medicine, id: Date.now() };
-    
-    // Optimistic UI & Local Storage
     const updatedMeds = [...(medicines || []), newMed];
     setMedicines(updatedMeds);
     localStorage.setItem('ninja_medicines', JSON.stringify(updatedMeds));
     playPop();
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
     try {
       const { data, error } = await supabase.from('medicines').insert([newMed]).select();
       if (error) throw error;
-      
-      console.log('⚡ [Supabase] Inserted medicine:', newMed.name);
-
-      // Optional sync if Supabase modifies the ID
       if (data && data.length > 0 && data[0].id !== newMed.id) {
         const finalMeds = updatedMeds.map(m => m.id === newMed.id ? data[0] : m);
         setMedicines(finalMeds);
@@ -125,10 +110,8 @@ const Dashboard = () => {
     const medToArchive = safeMedicines.find(m => m.id === id);
     
     if (medToArchive) {
-      // Optimistic UI & Local Storage
       const updatedHistory = [medToArchive, ...(history || [])];
       const updatedMeds = safeMedicines.filter(m => m.id !== id);
-      
       setHistory(updatedHistory);
       setMedicines(updatedMeds);
       localStorage.setItem('ninja_history', JSON.stringify(updatedHistory));
@@ -138,11 +121,8 @@ const Dashboard = () => {
       try {
         const { error: insertError } = await supabase.from('history').insert([medToArchive]);
         if (insertError) throw insertError;
-        
         const { error: deleteError } = await supabase.from('medicines').delete().eq('id', id);
         if (deleteError) throw deleteError;
-
-        console.log('⚡ [Supabase] Completed & archived medicine:', medToArchive.name);
       } catch (error) {
         console.error('❌ [Supabase] Complete Error (using local fallback):', error?.message || error);
       }
@@ -150,10 +130,8 @@ const Dashboard = () => {
   };
 
   const restoreMedicine = async (med) => {
-    // Optimistic UI & Local Storage
     const updatedMeds = [...(medicines || []), med];
     const updatedHistory = (history || []).filter(h => h.id !== med.id);
-    
     setMedicines(updatedMeds);
     setHistory(updatedHistory);
     localStorage.setItem('ninja_medicines', JSON.stringify(updatedMeds));
@@ -162,18 +140,14 @@ const Dashboard = () => {
     try {
       const { error: insertError } = await supabase.from('medicines').insert([med]);
       if (insertError) throw insertError;
-      
       const { error: deleteError } = await supabase.from('history').delete().eq('id', med.id);
       if (deleteError) throw deleteError;
-
-      console.log('⚡ [Supabase] Restored medicine:', med.name);
     } catch (error) {
       console.error('❌ [Supabase] Restore Error (using local fallback):', error?.message || error);
     }
   };
 
   const deleteHistory = async (id) => {
-    // Optimistic UI & Local Storage
     const updatedHistory = (history || []).filter(h => h.id !== id);
     setHistory(updatedHistory);
     localStorage.setItem('ninja_history', JSON.stringify(updatedHistory));
@@ -181,8 +155,6 @@ const Dashboard = () => {
     try {
       const { error } = await supabase.from('history').delete().eq('id', id);
       if (error) throw error;
-      
-      console.log('⚡ [Supabase] Deleted history record ID:', id);
     } catch (error) {
       console.error('❌ [Supabase] Delete Error (using local fallback):', error?.message || error);
     }
@@ -205,121 +177,158 @@ const Dashboard = () => {
   }
 
   return (
-    <Layout>
-      <motion.div
-        className="container"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.section className="hero-section" variants={itemVariants}>
-          <motion.h2
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            Welcome, {user?.name || 'Ninja'}!
-          </motion.h2>
-          <p>Master your health. Defeat the resistance.</p>
-        </motion.section>
+    <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
+      <div className="container">
+        <AnimatePresence mode="wait">
+          {/* ===== HOME PAGE ===== */}
+          {currentPage === 'home' && (
+            <motion.div key="home" {...pageTransition}>
+              <motion.div variants={staggerContainer} initial="initial" animate="animate">
+                <motion.section className="hero-section" variants={staggerItem}>
+                  <h1 className="hero-title">
+                    Welcome, {user?.name || 'Ninja'}!
+                  </h1>
+                  <p className="hero-subtitle">Master your health. Defeat the resistance.</p>
+                </motion.section>
 
-        <div className="app-grid">
-          <div className="left-column">
-            <motion.div variants={itemVariants}>
-              <MedicineForm onAdd={addMedicine} />
+                {medicines.length > 0 && (
+                  <motion.div variants={staggerItem} className="quick-risk-badge">
+                    <RiskAssessment medicines={medicines} history={history} baseRiskScore={user?.baseRiskScore || 0} />
+                  </motion.div>
+                )}
+
+                <motion.div variants={staggerItem}>
+                  <MedicineForm onAdd={addMedicine} />
+                </motion.div>
+
+                <motion.div className="medicines-list card" variants={staggerItem}>
+                  <h2 className="section-heading">Your Inventory 🎒</h2>
+                  {medicines.length === 0 ? (
+                    <motion.div
+                      className="empty-state"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <div className="empty-icon">🥷✨</div>
+                      <h3>You are on standby, Ninja!</h3>
+                      <p>No medicines yet. Start your first mission.</p>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      >
+                        + Add Medicine
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.ul layout>
+                      <AnimatePresence>
+                        {medicines.map(med => (
+                          <motion.li
+                            key={med.id}
+                            className="medicine-item"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            layout
+                          >
+                            <div>
+                              <strong>{med.name}</strong>
+                              <span className="med-details">{med.dosage} • {med.frequency} • {med.duration} days</span>
+                            </div>
+                            <div className="med-actions">
+                              <button
+                                className="btn-complete"
+                                onClick={() => completeMedicine(med.id)}
+                                title="Complete & Archive"
+                                aria-label={`Complete ${med.name}`}
+                              >
+                                ✅
+                              </button>
+                            </div>
+                          </motion.li>
+                        ))}
+                      </AnimatePresence>
+                    </motion.ul>
+                  )}
+                </motion.div>
+              </motion.div>
             </motion.div>
-            <motion.div variants={itemVariants}>
-              <div className="dashboard-grid">
+          )}
+
+          {/* ===== INSIGHTS PAGE ===== */}
+          {currentPage === 'insights' && (
+            <motion.div key="insights" {...pageTransition}>
+              <section className="page-header">
+                <h1 className="page-title">📊 Health Insights</h1>
+                <p className="page-subtitle">Your antibiotic resistance risk and body impact analysis</p>
+              </section>
+
+              <div className="insights-grid">
                 <Analytics medicines={medicines} history={history} />
                 <RiskGraph medicines={medicines} />
                 <BodyMap medicines={medicines} />
                 <LifetimeStats history={history} />
               </div>
+
+              {history.length > 0 && (
+                <History
+                  history={history}
+                  onRestore={restoreMedicine}
+                  onDeleteForever={deleteHistory}
+                />
+              )}
             </motion.div>
-          </div>
+          )}
 
-          <motion.div className="medicines-list card" variants={itemVariants}>
-            <h3>Your Inventory 🎒</h3>
-            {medicines.length === 0 ? (
-              <motion.div 
-                className="empty-state"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ textAlign: 'center', padding: '3rem 1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '2px dashed var(--secondary-color)' }}
-              >
-                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🥷✨</div>
-                <h4 style={{ marginBottom: '0.5rem', fontFamily: 'var(--heading-font)' }}>You are on standby, Ninja!</h4>
-                <p style={{ color: 'var(--light-text)', marginBottom: '1.5rem' }}>No medicines yet. Start your first mission.</p>
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                >
-                  + Add Medicine
-                </button>
-              </motion.div>
-            ) : (
-              <motion.ul layout>
-                <AnimatePresence>
-                  {medicines.map(med => (
-                    <motion.li
-                      key={med.id}
-                      className="medicine-item"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      layout
-                    >
-                      <div>
-                        <strong>{med.name}</strong>
-                        <span className="med-details">{med.dosage} • {med.frequency} • {med.duration} days</span>
-                      </div>
-                      <div className="med-actions">
-                        <button
-                          className="btn-complete"
-                          onClick={() => completeMedicine(med.id)}
-                          title="Complete & Archive"
-                        >
-                          ✅
-                        </button>
-                      </div>
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </motion.ul>
-            )}
+          {/* ===== LEARN PAGE ===== */}
+          {currentPage === 'learn' && (
+            <motion.div key="learn" {...pageTransition}>
+              <section className="page-header">
+                <h1 className="page-title">📚 Knowledge Dojo</h1>
+                <p className="page-subtitle">Learn about antibiotic resistance and how to protect yourself</p>
+              </section>
 
-            {medicines.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <RiskAssessment medicines={medicines} history={history} baseRiskScore={user?.baseRiskScore || 0} />
-              </motion.div>
-            )}
+              <Remedies medicines={medicines} />
+              <Stories />
+              <EducationSection />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-            {/* History Section */}
-            {history.length > 0 && (
-              <History
-                history={history}
-                onRestore={restoreMedicine}
-                onDeleteForever={deleteHistory}
-              />
-            )}
-          </motion.div>
-        </div>
+      <InstallPrompt />
+      <NinjaCompanion riskLevel={getRiskLevel()} />
 
-        <motion.div variants={itemVariants}>
-          <Remedies medicines={medicines} />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Stories />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <EducationSection />
-        </motion.div>
-
-        <InstallPrompt />
-        <NinjaCompanion riskLevel={getRiskLevel()} />
-      </motion.div>
+      {/* ===== BOTTOM TAB BAR ===== */}
+      <nav className="bottom-tab-bar" aria-label="Main navigation" role="navigation">
+        <button
+          className={`tab-btn ${currentPage === 'home' ? 'active' : ''}`}
+          onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          aria-label="Home"
+          aria-current={currentPage === 'home' ? 'page' : undefined}
+        >
+          <span className="tab-icon" aria-hidden="true">🏠</span>
+          <span className="tab-label">Home</span>
+        </button>
+        <button
+          className={`tab-btn ${currentPage === 'insights' ? 'active' : ''}`}
+          onClick={() => { setCurrentPage('insights'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          aria-label="Health Insights"
+          aria-current={currentPage === 'insights' ? 'page' : undefined}
+        >
+          <span className="tab-icon" aria-hidden="true">📊</span>
+          <span className="tab-label">Insights</span>
+        </button>
+        <button
+          className={`tab-btn ${currentPage === 'learn' ? 'active' : ''}`}
+          onClick={() => { setCurrentPage('learn'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          aria-label="Learn about AMR"
+          aria-current={currentPage === 'learn' ? 'page' : undefined}
+        >
+          <span className="tab-icon" aria-hidden="true">📚</span>
+          <span className="tab-label">Learn</span>
+        </button>
+      </nav>
     </Layout>
   );
 };
@@ -344,7 +353,7 @@ const LoadingScreen = () => (
   >
     <motion.img 
       src={`${import.meta.env.BASE_URL}ninja-happy.png`} 
-      alt="Ninja Logo" 
+      alt="Medication Ninja Logo" 
       style={{ width: '150px', marginBottom: '1rem' }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}

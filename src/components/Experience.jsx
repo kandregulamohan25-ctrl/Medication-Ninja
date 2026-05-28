@@ -13,7 +13,7 @@ const Experience = ({ onEnter }) => {
   const buttonY = useTransform(scrollYProgress, [0.8, 1], [50, 0]);
 
   // Prevent button from being clickable until it's visible
-  const pointerEvents = useTransform(scrollYProgress, [0.8, 1], ['none', 'auto']);
+  const pointerEvents = useTransform(scrollYProgress, (pos) => pos > 0.8 ? 'auto' : 'none');
 
   const canvasRef = React.useRef(null);
   const FRAME_COUNT = 200;
@@ -84,7 +84,7 @@ const Experience = ({ onEnter }) => {
           }}
         />
 
-        <motion.div style={{ opacity: introOpacity, y: introY, textAlign: 'center', position: 'absolute', zIndex: 1 }}>
+        <motion.div style={{ opacity: introOpacity, y: introY, textAlign: 'center', position: 'absolute', zIndex: 1, pointerEvents: 'none' }}>
           <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontFamily: 'var(--heading-font)' }}>
             Welcome to Scarlet Nova
           </h1>
@@ -96,7 +96,8 @@ const Experience = ({ onEnter }) => {
             opacity: buttonOpacity, 
             y: buttonY, 
             pointerEvents,
-            position: 'absolute'
+            position: 'absolute',
+            zIndex: 10
           }}
         >
           <button 
@@ -105,7 +106,8 @@ const Experience = ({ onEnter }) => {
             style={{ 
               padding: '1.2rem 3rem', 
               fontSize: '1.3rem', 
-              boxShadow: '0 0 30px rgba(255, 51, 102, 0.5)' 
+              boxShadow: '0 0 30px rgba(255, 51, 102, 0.5)',
+              cursor: 'pointer'
             }}
           >
             Enter App

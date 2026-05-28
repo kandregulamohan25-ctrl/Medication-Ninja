@@ -4,7 +4,7 @@ import MenuBar from './MenuBar';
 import StreakCounter from './StreakCounter';
 import { useUser } from './UserContext';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, currentPage, onNavigate }) => {
     const { user, login, logout } = useUser();
     const [darkMode, setDarkMode] = useState(() => {
         try {
@@ -14,15 +14,6 @@ const Layout = ({ children }) => {
             return false;
         }
     });
-    const [activeUsers, setActiveUsers] = useState(1240);
-
-    useEffect(() => {
-        // Mock live counter
-        const interval = setInterval(() => {
-            setActiveUsers(prev => prev + Math.floor(Math.random() * 3) - 1);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         if (darkMode) {
@@ -36,21 +27,25 @@ const Layout = ({ children }) => {
 
     return (
         <div className="layout-wrapper">
-            <div className="app-controls">
+            <header className="app-controls" role="banner">
                 <StreakCounter />
                 <MenuBar
-                    medicines={children.props?.medicines}
-                    history={children.props?.history}
                     darkMode={darkMode}
                     toggleTheme={() => setDarkMode(!darkMode)}
+                    currentPage={currentPage}
+                    onNavigate={onNavigate}
                 />
-            </div>
+            </header>
 
-            <main className="main-content container animate-fade-in">
-                <div className="logo-watermark">Medication Ninja</div>
+            <main className="main-content animate-fade-in" role="main">
+                <div className="logo-watermark" aria-hidden="true">Medication Ninja</div>
                 {children}
             </main>
-        </div >
+
+            <footer className="app-footer" role="contentinfo">
+                <small>© 2026 Medication Ninja — Fighting Antibiotic Resistance</small>
+            </footer>
+        </div>
     );
 };
 

@@ -3,17 +3,95 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0077B6" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥷</text></svg>" />
+
+  <!-- Primary SEO -->
+  <title>Medication Ninja — Track Antibiotics & Fight Resistance</title>
   <meta name="description"
-    content="Track your antibiotic intake and assess resistance risks with our medical-grade knowledge provider." />
-  <title>Antibiotic Resistance Risk Provider</title>
+    content="Medication Ninja helps you track antibiotic usage, monitor resistance risks, and learn to protect yourself from antimicrobial resistance (AMR). Free health companion app." />
+  <meta name="keywords"
+    content="medication tracker, antibiotic resistance, AMR, health app, medicine reminder, antibiotic tracker, antimicrobial resistance" />
+  <meta name="author" content="Medication Ninja" />
+  <meta name="robots" content="index, follow" />
+  <!-- TODO: Update this to your actual Vercel URL -->
+  <link rel="canonical" href="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/" />
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#2B2D42" />
+
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Medication Ninja — Track Antibiotics & Fight Resistance" />
+  <meta property="og:description"
+    content="Your health companion for tracking medications, monitoring antibiotic resistance risks, and learning about AMR prevention." />
+  <meta property="og:url" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/" />
+  <meta property="og:site_name" content="Medication Ninja" />
+  <meta property="og:image" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Medication Ninja — Track Antibiotics & Fight Resistance" />
+  <meta name="twitter:description"
+    content="Track your meds, monitor resistance risks, and learn about AMR prevention." />
+  <meta name="twitter:image" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/og-image.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- PWA -->
+  <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Medication Ninja",
+    "description": "Track antibiotic usage, monitor resistance risks, and learn about antimicrobial resistance prevention.",
+    "url": "https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Static SEO fallback content — visible to Google crawlers before JS loads -->
+    <div style="max-width:800px;margin:0 auto;padding:2rem;font-family:system-ui,sans-serif;text-align:center">
+      <h1>Medication Ninja</h1>
+      <p>Track your antibiotic usage, assess resistance risks, and protect your health from antimicrobial resistance.</p>
+      <h2>Features</h2>
+      <ul style="text-align:left;max-width:500px;margin:0 auto">
+        <li>Track active medications and antibiotic courses</li>
+        <li>Monitor your antibiotic resistance risk over time</li>
+        <li>Visualize biological impact on your body systems</li>
+        <li>Learn about AMR prevention and safe antibiotic use</li>
+        <li>Gamified health tracking with XP and ninja levels</li>
+      </ul>
+    </div>
+  </div>
+  <noscript>
+    <div style="max-width:600px;margin:2rem auto;padding:1rem;text-align:center;font-family:system-ui">
+      <h1>Medication Ninja</h1>
+      <p>This application requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+    </div>
+  </noscript>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

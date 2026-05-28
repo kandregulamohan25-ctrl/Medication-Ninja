@@ -6,13 +6,21 @@ import './MenuBar.css';
 import { generateDoctorReport } from '../utils/DoctorExport';
 import GeofenceController from './GeofenceController';
 
-const MenuBar = ({ medicines = [], history = [], darkMode, toggleTheme }) => {
+const MenuBar = ({ darkMode, toggleTheme, currentPage, onNavigate }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, logout } = useUser();
 
     const handleExport = () => {
         // Mock calculation for report (In real app, pass actual risk/score)
-        generateDoctorReport(user, medicines, history, 'Moderate', 85);
+        generateDoctorReport(user, [], [], 'Moderate', 85);
+        setIsOpen(false);
+    };
+
+    const handleNavigate = (page) => {
+        if (onNavigate) {
+            onNavigate(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         setIsOpen(false);
     };
 
@@ -25,7 +33,7 @@ const MenuBar = ({ medicines = [], history = [], darkMode, toggleTheme }) => {
 
     return (
         <>
-            <button className="menu-toggle fab-interaction" onClick={toggleOpen}>
+            <button className="menu-toggle fab-interaction" onClick={toggleOpen} aria-label="Open navigation menu">
                 <div className={`hamburger ${isOpen ? 'open' : ''}`}>
                     <span></span>
                     <span></span>
@@ -50,10 +58,12 @@ const MenuBar = ({ medicines = [], history = [], darkMode, toggleTheme }) => {
                             initial="closed"
                             animate="open"
                             exit="closed"
+                            role="dialog"
+                            aria-label="Navigation menu"
                         >
                             <div className="menu-header">
                                 <h2>Ninja Scroll</h2>
-                                <button className="btn-close-menu" onClick={toggleOpen}>×</button>
+                                <button className="btn-close-menu" onClick={toggleOpen} aria-label="Close menu">×</button>
                             </div>
 
                             <div className="user-profile-section">
@@ -66,13 +76,32 @@ const MenuBar = ({ medicines = [], history = [], darkMode, toggleTheme }) => {
                                 </div>
                             </div>
 
-                            <nav className="menu-nav">
-                                <button className="menu-item active">🏠 Dashboard</button>
+                            <nav className="menu-nav" aria-label="Sidebar navigation">
+                                <button
+                                    className={`menu-item ${currentPage === 'home' ? 'active' : ''}`}
+                                    onClick={() => handleNavigate('home')}
+                                >
+                                    🏠 Home
+                                </button>
+                                <button
+                                    className={`menu-item ${currentPage === 'insights' ? 'active' : ''}`}
+                                    onClick={() => handleNavigate('insights')}
+                                >
+                                    📊 Health Insights
+                                </button>
+                                <button
+                                    className={`menu-item ${currentPage === 'learn' ? 'active' : ''}`}
+                                    onClick={() => handleNavigate('learn')}
+                                >
+                                    📚 Knowledge Dojo
+                                </button>
+
+                                <div className="divider"></div>
+
                                 <button className="menu-item" onClick={() => toggleTheme()}>
                                     {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
                                 </button>
                                 <button className="menu-item" onClick={handleExport}>📄 Export Doctor Report</button>
-                                <button className="menu-item">⚙️ Settings</button>
 
                                 <div className="divider"></div>
 

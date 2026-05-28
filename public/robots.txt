@@ -1,0 +1,7 @@
+# Medication Ninja - robots.txt
+# TODO: Update the Sitemap URL to your actual Vercel domain
+
+User-agent: *
+Allow: /
+
+Sitemap: https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/sitemap.xml

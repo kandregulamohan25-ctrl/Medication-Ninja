@@ -124,18 +124,20 @@
 .main-content {
     flex: 1;
     padding-top: var(--spacing-lg);
-    padding-bottom: var(--spacing-lg);
+    padding-bottom: 5.5rem; /* Space for bottom tab bar */
 }
 
-.main-footer {
+.main-footer,
+.app-footer {
     background-color: var(--card-bg);
     backdrop-filter: blur(5px);
     border-top: var(--card-border);
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
+    padding-bottom: 5rem; /* Space for bottom tab bar */
     margin-top: auto;
     text-align: center;
     color: var(--light-text);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: background-color 0.3s ease;
 }
 
