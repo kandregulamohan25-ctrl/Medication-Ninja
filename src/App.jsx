@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useSound from 'use-sound';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Layout from './components/Layout';
 import MedicineForm from './components/MedicineForm';
 import RiskAssessment from './components/RiskAssessment';
@@ -387,6 +388,7 @@ function App() {
           </ErrorBoundary>
         )
       )}
+      <VercelAnalytics />
     </>
   );
 }
