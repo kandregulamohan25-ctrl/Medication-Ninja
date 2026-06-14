@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -7,27 +7,25 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥷</text></svg>" />
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F977;</text></svg>" />
 
   <!-- Primary SEO -->
-  <title>Medication Ninja — Track Antibiotics & Fight Resistance</title>
+  <title>Medication Ninja - Free Antibiotic Tracker &amp; Resistance Risk App</title>
   <meta name="description"
-    content="Medication Ninja helps you track antibiotic usage, monitor resistance risks, and learn to protect yourself from antimicrobial resistance (AMR). Free health companion app." />
+    content="Medication Ninja is a free app to track antibiotic usage, monitor antimicrobial resistance (AMR) risk, get medicine reminders, and learn safe antibiotic practices. Protect your health today." />
   <meta name="keywords"
-    content="medication tracker, antibiotic resistance, AMR, health app, medicine reminder, antibiotic tracker, antimicrobial resistance" />
+    content="medication tracker, antibiotic tracker, antibiotic resistance app, AMR risk checker, medicine reminder, track antibiotics, antimicrobial resistance, free health app, medication management" />
   <meta name="author" content="Medication Ninja" />
   <meta name="robots" content="index, follow" />
-  <!-- TODO: Update this to your actual Vercel URL -->
   <link rel="canonical" href="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/" />
 
   <!-- Theme -->
   <meta name="theme-color" content="#2B2D42" />
 
-  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Medication Ninja — Track Antibiotics & Fight Resistance" />
-  <meta property="og:description"
-    content="Your health companion for tracking medications, monitoring antibiotic resistance risks, and learning about AMR prevention." />
+  <meta property="og:title" content="Medication Ninja - Free Antibiotic Tracker &amp; AMR Risk App" />
+  <meta property="og:description" content="Track antibiotics, monitor resistance risks, and learn AMR prevention. Free health companion app." />
   <meta property="og:url" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/" />
   <meta property="og:site_name" content="Medication Ninja" />
   <meta property="og:image" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/og-image.png" />
@@ -36,17 +34,14 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Medication Ninja — Track Antibiotics & Fight Resistance" />
-  <meta name="twitter:description"
-    content="Track your meds, monitor resistance risks, and learn about AMR prevention." />
+  <meta name="twitter:title" content="Medication Ninja - Free Antibiotic Tracker &amp; AMR Risk App" />
+  <meta name="twitter:description" content="Track antibiotics, monitor resistance risks, and learn AMR prevention." />
   <meta name="twitter:image" content="https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app/og-image.png" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- PWA -->
   <link rel="apple-touch-icon" href="/pwa-192x192.png" />
@@ -57,41 +52,231 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Medication Ninja",
-    "description": "Track antibiotic usage, monitor resistance risks, and learn about antimicrobial resistance prevention.",
+    "description": "Free app to track antibiotic usage, monitor antimicrobial resistance risk, and learn safe medication practices.",
     "url": "https://medication-ninja-3st09or1r-k-mohans-projects-1645b3a6.vercel.app",
     "applicationCategory": "HealthApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
+    "operatingSystem": "Web, Android, iOS",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": [
+      "Antibiotic course tracker",
+      "Antimicrobial resistance risk scoring",
+      "Body impact visualization",
+      "Medicine history and archive",
+      "AMR education and prevention tips",
+      "Doctor report export"
+    ]
+  }
+  </script>
+
+  <!-- FAQ Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Medication Ninja?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Medication Ninja is a free web app that helps you track your antibiotic and medication usage, assess your antimicrobial resistance (AMR) risk, and learn how to use antibiotics safely."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is antibiotic resistance?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Antibiotic resistance (AMR) occurs when bacteria evolve to resist the medicines designed to kill them. It happens when antibiotics are overused or not completed properly, making infections harder to treat."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Medication Ninja help prevent antibiotic resistance?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Medication Ninja tracks your antibiotic courses, reminds you to complete full prescriptions, scores your resistance risk, and educates you on safe antibiotic practices - all of which help prevent AMR."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Medication Ninja free to use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, Medication Ninja is completely free to use. No subscription or payment required."
+        }
+      }
+    ]
   }
   </script>
 </head>
 
 <body>
   <div id="root">
-    <!-- Static SEO fallback content — visible to Google crawlers before JS loads -->
-    <div style="max-width:800px;margin:0 auto;padding:2rem;font-family:system-ui,sans-serif;text-align:center">
-      <h1>Medication Ninja</h1>
-      <p>Track your antibiotic usage, assess resistance risks, and protect your health from antimicrobial resistance.</p>
-      <h2>Features</h2>
-      <ul style="text-align:left;max-width:500px;margin:0 auto">
-        <li>Track active medications and antibiotic courses</li>
-        <li>Monitor your antibiotic resistance risk over time</li>
-        <li>Visualize biological impact on your body systems</li>
-        <li>Learn about AMR prevention and safe antibiotic use</li>
-        <li>Gamified health tracking with XP and ninja levels</li>
-      </ul>
+    <!--
+      STATIC LANDING PAGE - Visible to Google crawlers before JavaScript loads.
+      Users will see the React app instead once JS executes.
+      This content is intentionally styled to also look good if JS is slow.
+    -->
+    <style>
+      .seo-page { font-family: 'Outfit', system-ui, sans-serif; color: #1A202C; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+      .seo-header { text-align: center; padding: 3rem 0 2rem; background: linear-gradient(135deg, #2B2D42, #5D6D7E); color: white; border-radius: 20px; margin-bottom: 2.5rem; padding: 2.5rem 2rem; }
+      .seo-header h1 { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 2.5rem; margin: 0 0 0.75rem; }
+      .seo-header p { font-size: 1.15rem; opacity: 0.88; margin: 0 0 1.5rem; }
+      .seo-cta { display: inline-block; background: #FF3366; color: white; padding: 0.9rem 2.2rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+      .seo-section { margin-bottom: 2.5rem; }
+      .seo-section h2 { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.6rem; color: #2B2D42; margin-bottom: 1rem; border-left: 4px solid #FF3366; padding-left: 0.75rem; }
+      .seo-section h3 { font-size: 1.1rem; color: #2B2D42; margin: 1.2rem 0 0.4rem; }
+      .seo-section p, .seo-section li { font-size: 1rem; line-height: 1.7; color: #4A5568; }
+      .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
+      .feature-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; }
+      .feature-card .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+      .feature-card h3 { margin: 0 0 0.4rem; font-size: 1rem; color: #2B2D42; }
+      .feature-card p { margin: 0; font-size: 0.9rem; color: #718096; }
+      .faq-item { border-bottom: 1px solid #e2e8f0; padding: 1rem 0; }
+      .faq-item h3 { margin: 0 0 0.4rem; font-size: 1rem; color: #2B2D42; }
+      .faq-item p { margin: 0; }
+      .seo-footer { text-align: center; color: #718096; font-size: 0.85rem; padding: 2rem 0 0; border-top: 1px solid #e2e8f0; margin-top: 3rem; }
+      ul { padding-left: 1.5rem; }
+      ul li { margin-bottom: 0.4rem; }
+    </style>
+
+    <div class="seo-page">
+
+      <!-- HERO -->
+      <header class="seo-header">
+        <div style="font-size:3rem;margin-bottom:0.5rem">&#x1F977;</div>
+        <h1>Medication Ninja</h1>
+        <p>Track your antibiotics, fight resistance, protect your health — for free.</p>
+        <a href="#" class="seo-cta" onclick="return false;">Get Started Free</a>
+      </header>
+
+      <!-- WHAT IS IT -->
+      <section class="seo-section">
+        <h2>What is Medication Ninja?</h2>
+        <p>
+          Medication Ninja is a free, gamified health companion app that helps you <strong>track your antibiotic and medication usage</strong>,
+          monitor your personal <strong>antimicrobial resistance (AMR) risk</strong>, and learn how to use medicines safely.
+          Whether you are managing a current antibiotic course or want to understand your long-term medication history,
+          Medication Ninja gives you a clear, visual picture of your health.
+        </p>
+        <p>
+          Antibiotic resistance is one of the biggest global health threats today. When antibiotics are overused or
+          taken incorrectly, bacteria evolve to resist them — making infections harder and sometimes impossible to treat.
+          Medication Ninja helps you do your part to stop this by tracking your courses and educating you on safe practices.
+        </p>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="seo-section">
+        <h2>Key Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="icon">&#x1F48A;</div>
+            <h3>Antibiotic Tracker</h3>
+            <p>Log your antibiotic courses with dosage, frequency, and duration. Never forget a dose again.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">&#x1F6E1;&#xFE0F;</div>
+            <h3>Resistance Risk Score</h3>
+            <p>Get a personalised AMR risk score based on your medication history and usage patterns.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">&#x1F9EC;</div>
+            <h3>Body Impact Map</h3>
+            <p>Visualise how your medications affect your body systems — brain, lungs, gut and more.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">&#x1F4CA;</div>
+            <h3>Health Insights</h3>
+            <p>Charts and graphs showing your AMR risk trend over time and body compatibility score.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">&#x1F4DA;</div>
+            <h3>AMR Education</h3>
+            <p>Learn what antibiotic resistance is, its causes, global impact, and how to prevent it.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">&#x1F4C4;</div>
+            <h3>Doctor Report</h3>
+            <p>Export a full medication history report to share with your healthcare provider.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHY IT MATTERS -->
+      <section class="seo-section">
+        <h2>Why Antibiotic Resistance Matters</h2>
+        <p>
+          According to the World Health Organization (WHO), antimicrobial resistance is one of the top global public health threats.
+          Every year, at least 1.27 million deaths are directly attributed to antibiotic-resistant infections worldwide.
+        </p>
+        <ul>
+          <li><strong>Over-prescribing</strong> — antibiotics prescribed for viral infections that don't need them</li>
+          <li><strong>Incomplete courses</strong> — stopping antibiotics early allows resistant bacteria to survive</li>
+          <li><strong>Self-medication</strong> — taking leftover antibiotics without a prescription</li>
+          <li><strong>Sharing antibiotics</strong> — using someone else's prescription medicines</li>
+        </ul>
+        <p>
+          Medication Ninja educates and empowers users to make smarter decisions about antibiotic use,
+          reducing their personal resistance risk and contributing to global AMR prevention.
+        </p>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="seo-section">
+        <h2>How It Works</h2>
+        <ol style="padding-left:1.5rem;line-height:2">
+          <li><strong>Sign in</strong> with your email — no password needed</li>
+          <li><strong>Add your medicines</strong> — name, dosage, frequency, duration</li>
+          <li><strong>Track progress</strong> — mark medicines complete when done</li>
+          <li><strong>View insights</strong> — check your AMR risk score and body impact</li>
+          <li><strong>Learn and improve</strong> — read tips on safe antibiotic use</li>
+        </ol>
+      </section>
+
+      <!-- FAQ -->
+      <section class="seo-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <h3>Is Medication Ninja free?</h3>
+          <p>Yes, completely free. No subscription, no hidden charges.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Do I need to install anything?</h3>
+          <p>No installation required — it works in any browser. You can also install it as a PWA on your phone for offline access.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Is my health data safe?</h3>
+          <p>Your data is stored securely and only accessible to you. We use Supabase with row-level security to protect your information.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Can I use this to replace my doctor?</h3>
+          <p>No. Medication Ninja is an educational tool to help you track and understand your medication usage. Always consult a qualified healthcare professional for medical advice.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What antibiotics can I track?</h3>
+          <p>You can track any antibiotic — Amoxicillin, Ciprofloxacin, Azithromycin, Augmentin, and more. The app identifies them and calculates your resistance risk accordingly.</p>
+        </div>
+      </section>
+
+      <footer class="seo-footer">
+        <p>&#169; 2026 Medication Ninja &mdash; Fighting Antibiotic Resistance, One Dose at a Time.</p>
+        <p style="margin-top:0.5rem">
+          <strong>Disclaimer:</strong> Medication Ninja is an educational health tracking tool and is not a substitute for professional medical advice.
+        </p>
+      </footer>
+
     </div>
   </div>
+
   <noscript>
-    <div style="max-width:600px;margin:2rem auto;padding:1rem;text-align:center;font-family:system-ui">
+    <div style="max-width:600px;margin:2rem auto;padding:1.5rem;text-align:center;font-family:system-ui">
       <h1>Medication Ninja</h1>
-      <p>This application requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+      <p>Please enable JavaScript in your browser to use Medication Ninja.</p>
     </div>
   </noscript>
+
   <script type="module" src="/src/main.jsx"></script>
 </body>
 
