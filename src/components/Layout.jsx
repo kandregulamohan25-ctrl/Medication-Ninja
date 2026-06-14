@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import './Layout.css';
-import MenuBar from './MenuBar';
-import StreakCounter from './StreakCounter';
-import { useUser } from './UserContext';
+﻿import React, { useState, useEffect } from "react";
+import "./Layout.css";
+import MenuBar from "./MenuBar";
+import StreakCounter from "./StreakCounter";
+import { useUser } from "./UserContext";
 
-const Layout = ({ children, currentPage, onNavigate }) => {
-    const { user, login, logout } = useUser();
+const Layout = ({ children, currentPage, onNavigate, medicines = [], history = [] }) => {
+    const { user } = useUser();
     const [darkMode, setDarkMode] = useState(() => {
-        try {
-            return localStorage.getItem('ninja_theme') === 'dark';
-        } catch (e) {
-            console.log('Theme persistence error', e);
-            return false;
-        }
+        try { return localStorage.getItem("ninja_theme") === "dark"; }
+        catch (e) { return false; }
     });
 
     useEffect(() => {
         if (darkMode) {
-            document.body.setAttribute('data-theme', 'dark');
-            localStorage.setItem('ninja_theme', 'dark');
+            document.body.setAttribute("data-theme", "dark");
+            localStorage.setItem("ninja_theme", "dark");
         } else {
-            document.body.removeAttribute('data-theme');
-            localStorage.setItem('ninja_theme', 'light');
+            document.body.removeAttribute("data-theme");
+            localStorage.setItem("ninja_theme", "light");
         }
     }, [darkMode]);
 
@@ -34,6 +30,8 @@ const Layout = ({ children, currentPage, onNavigate }) => {
                     toggleTheme={() => setDarkMode(!darkMode)}
                     currentPage={currentPage}
                     onNavigate={onNavigate}
+                    medicines={medicines}
+                    history={history}
                 />
             </header>
 
@@ -43,7 +41,7 @@ const Layout = ({ children, currentPage, onNavigate }) => {
             </main>
 
             <footer className="app-footer" role="contentinfo">
-                <small>© 2026 Medication Ninja — Fighting Antibiotic Resistance</small>
+                <small>&copy; 2026 Medication Ninja &mdash; Fighting Antibiotic Resistance</small>
             </footer>
         </div>
     );
