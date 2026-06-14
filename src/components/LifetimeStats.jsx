@@ -1,17 +1,32 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { getClass } from '../utils/riskLogic';
 import './LifetimeStats.css';
 
 const LifetimeStats = ({ history }) => {
-    // Mock logic for "Compatibility Score"
-    // Start at 100%. Deduct 2% for every antibiotic course in history.
+    // Better logic for "Compatibility Score"
+    // Start at 100%. Deduct points based on type and duration of antibiotic courses.
     const calculateScore = () => {
         let penalty = 0;
         history.forEach(med => {
-            const name = med.name.toLowerCase();
-            if (['amoxicillin', 'ciprofloxacin', 'azithromycin', 'augmentin'].some(ab => name.includes(ab))) {
-                penalty += 2; // 2% penalty per antibiotic
+            const medClass = getClass(med.name);
+            const duration = parseInt(med.duration || 0);
+
+            if (medClass) {
+                // Base penalty for antibiotic course
+                let base = 2;
+                // Higher penalty for heavy antibiotics
+                if (['fluoroquinolone', 'nitroimidazole', 'lincosamide', 'glycopeptide'].includes(medClass)) {
+                    base = 3.5;
+                }
+                
+                // Penalty for incomplete courses (duration < 5 usually implies stopped early)
+                if (duration > 0 && duration < 5) {
+                    base += 2; // Extra penalty for short/incomplete course
+                }
+
+                penalty += base;
             } else {
                 penalty += 0.5; // 0.5% penalty for general meds (liver load)
             }
@@ -23,9 +38,7 @@ const LifetimeStats = ({ history }) => {
     };
 
     const score = calculateScore();
-    const antibioticsCount = history.filter(med =>
-        ['amoxicillin', 'ciprofloxacin', 'azithromycin'].some(ab => med.name.toLowerCase().includes(ab))
-    ).length;
+    const antibioticsCount = history.filter(med => getClass(med.name) !== null).length;
 
     const data = [
         { name: 'Compatibility', value: score },
@@ -75,7 +88,7 @@ const LifetimeStats = ({ history }) => {
 
                 <div className="stats-details">
                     <p><strong>{history.length}</strong> Total Treatments</p>
-                    <p className="danger-text"><strong>{antibioticsCount}</strong> Antibiotic Courses</p>
+                    <p className={antibioticsCount > 0 ? "danger-text" : ""}><strong>{antibioticsCount}</strong> Antibiotic Courses</p>
                     <small>Each course leaves a footprint. Keep your score high!</small>
                 </div>
             </div>

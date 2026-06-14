@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DrNinjaAI - The Brain of Medication Ninja
  * 
  * Analyzes the user's current medication list to deduce potential conditions
@@ -7,52 +7,52 @@
 
 const conditionMap = [
     {
-        keywords: ['amoxicillin', 'azithromycin', 'augmentin', 'cefixime', 'clavulanic'],
+        keywords: ['amoxicillin', 'azithromycin', 'augmentin', 'cefixime', 'clavulanic', 'amoxil'],
         condition: 'Bacterial Infection (Likely Throat/Chest)',
-        targetSystem: 'Lungs', // New: Target System
+        targetSystem: 'Lungs',
         remedies: [
             { icon: '🍯', title: 'Honey & Ginger', desc: 'Soothes throat inflammation naturally.' },
-            { icon: '💨', title: 'Steam Inhalation', desc: 'Clears congestion and aids breathing.' },
-            { icon: '🥣', title: 'Warm Soup', desc: 'Hydration and comfort for the immune system.' }
+            { icon: '♨️', title: 'Steam Inhalation', desc: 'Clears congestion and aids breathing.' },
+            { icon: '🍲', title: 'Warm Soup', desc: 'Hydration and comfort for the immune system.' }
         ]
     },
     {
-        keywords: ['ciprofloxacin', 'nitrofurantoin', 'norfloxacin'],
+        keywords: ['ciprofloxacin', 'nitrofurantoin', 'norfloxacin', 'levofloxacin', 'cipro'],
         condition: 'Urinary Tract Infection (UTI)',
-        targetSystem: 'Gut', // Antibiotics like Cipro hit the gut hard
+        targetSystem: 'Kidneys',
         remedies: [
-            { icon: '🍒', title: 'Cranberry Juice', desc: 'Helps prevent bacteria from sticking.' },
+            { icon: '🥤', title: 'Cranberry Juice', desc: 'Helps prevent bacteria from sticking.' },
             { icon: '💧', title: 'Hydration Boost', desc: 'Drink 3-4L water to flush toxins.' },
-            { icon: '❌', title: 'Avoid Caffeine', desc: 'Irritates the bladder, skip coffee.' }
+            { icon: '☕', title: 'Avoid Caffeine', desc: 'Irritates the bladder, skip coffee.' }
         ]
     },
     {
-        keywords: ['metronidazole', 'tinidazole'],
+        keywords: ['metronidazole', 'tinidazole', 'flagyl'],
         condition: 'Stomach/Gut Infection',
         targetSystem: 'Gut',
         remedies: [
-            { icon: '🍚', title: 'BRAT Diet', desc: 'Bananas, Rice, Applesauce, Toast.' },
-            { icon: '🥛', title: 'Probiotics', desc: 'Restore good gut bacteria (Yogurt).' },
+            { icon: '🍌', title: 'BRAT Diet', desc: 'Bananas, Rice, Applesauce, Toast.' },
+            { icon: '🥣', title: 'Probiotics', desc: 'Restore good gut bacteria (Yogurt).' },
             { icon: '🥥', title: 'Coconut Water', desc: 'Replenish electrolytes lost.' }
         ]
     },
     {
-        keywords: ['paracetamol', 'ibuprofen', 'aspirin', 'dolo'],
+        keywords: ['paracetamol', 'ibuprofen', 'aspirin', 'dolo', 'tylenol', 'advil'],
         condition: 'Fever or Pain Management',
-        targetSystem: 'General',
+        targetSystem: 'Liver',
         remedies: [
             { icon: '🧊', title: 'Cold Compress', desc: 'Apply to forehead to reduce fever.' },
-            { icon: '🛌', title: 'Rest & Sleep', desc: 'Critical for body repair.' },
-            { icon: '🌿', title: 'Turmeric Milk', desc: 'Natural anti-inflammatory.' }
+            { icon: '🛏️', title: 'Rest & Sleep', desc: 'Critical for body repair.' },
+            { icon: '🥛', title: 'Turmeric Milk', desc: 'Natural anti-inflammatory.' }
         ]
     },
     {
-        keywords: ['clindamycin', 'doxycycline'],
+        keywords: ['clindamycin', 'doxycycline', 'minocycline'],
         condition: 'Skin/Soft Tissue Infection',
         targetSystem: 'Skin',
         remedies: [
-            { icon: '🧴', title: 'Gentle Cleansing', desc: 'Keep area clean with mild soap.' },
-            { icon: '🥒', title: 'Aloe Vera', desc: 'Soothes skin irritation.' },
+            { icon: '🧼', title: 'Gentle Cleansing', desc: 'Keep area clean with mild soap.' },
+            { icon: '🌿', title: 'Aloe Vera', desc: 'Soothes skin irritation.' },
             { icon: '💧', title: 'Stay Hydrated', desc: 'Helps skin heal from within.' }
         ]
     }
@@ -60,8 +60,8 @@ const conditionMap = [
 
 const generalTips = [
     { icon: '🥗', title: 'Eat the Rainbow', desc: 'Colorful fruits/veggies boost immunity.' },
-    { icon: '😴', title: 'Sleep 8 Hours', desc: 'Your body heals while you sleep.' },
-    { icon: '🏃', title: 'Light Activity', desc: 'Keep blood flowing, but don\'t overexert.' }
+    { icon: '💤', title: 'Sleep 8 Hours', desc: 'Your body heals while you sleep.' },
+    { icon: '🚶‍♂️', title: 'Light Activity', desc: 'Keep blood flowing, but don\'t overexert.' }
 ];
 
 export const analyzeCondition = (medicines) => {
@@ -91,7 +91,7 @@ export const analyzeCondition = (medicines) => {
     return {
         condition: 'Unknown Infection/Condition',
         tips: [
-            { icon: '🩺', title: 'Follow Prescription', desc: 'Complete the full course as directed.' },
+            { icon: '💊', title: 'Follow Prescription', desc: 'Complete the full course as directed.' },
             ...generalTips.slice(0, 2)
         ],
         isDefault: true
@@ -105,28 +105,37 @@ export const calculateBodyLoad = (medicines) => {
         'Lungs': 100,
         'Gut': 100,
         'Skin': 100,
+        'Liver': 100,
+        'Kidneys': 100,
         'Immunity': 100
     };
 
-    if (!medicines) return systems;
+    if (!medicines || medicines.length === 0) return systems;
 
     medicines.forEach(med => {
         const name = med.name.toLowerCase();
-        let hit = false;
+        const duration = parseInt(med.duration || 7);
+        // Base impact depends on duration: longer course = more impact
+        const baseImpact = Math.min(40, duration * 3); 
 
         for (let map of conditionMap) {
             if (map.keywords.some(k => name.includes(k))) {
                 if (map.targetSystem && systems[map.targetSystem]) {
-                    // Reduce health of that system
-                    systems[map.targetSystem] = Math.max(20, systems[map.targetSystem] - 30);
-                    hit = true;
+                    // Reduce health of that system dynamically
+                    systems[map.targetSystem] = Math.max(20, systems[map.targetSystem] - baseImpact);
                 }
             }
         }
 
-        // All meds hit immunity/gut slightly
-        systems['Gut'] = Math.max(10, systems['Gut'] - 5);
-        systems['Immunity'] = Math.max(30, systems['Immunity'] - 10);
+        // All meds hit immunity/gut/liver slightly
+        systems['Gut'] = Math.max(10, systems['Gut'] - (duration * 1.5));
+        systems['Liver'] = Math.max(20, systems['Liver'] - (duration * 1.2));
+        systems['Immunity'] = Math.max(30, systems['Immunity'] - (duration * 1.0));
+    });
+
+    // Ensure all scores are rounded
+    Object.keys(systems).forEach(k => {
+        systems[k] = Math.round(systems[k]);
     });
 
     return systems;

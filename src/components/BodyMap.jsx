@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { calculateBodyLoad } from '../utils/DrNinjaAI';
 import './BodyMap.css';

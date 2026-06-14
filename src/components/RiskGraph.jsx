@@ -1,30 +1,32 @@
-import React from 'react';
+﻿import React from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { motion } from 'framer-motion';
+import { buildRiskHistory } from '../utils/riskLogic';
 import './RiskGraph.css';
 
-const RiskGraph = ({ medicines }) => {
-    // Mock logic: Calculate "Risk Score" based on antibiotic count
-    // In a real app, this would be historical data. 
-    // Here we simulate a timeline based on the current number of meds.
+const RiskGraph = ({ medicines, history = [] }) => {
+    // Generate real data based on history and active medicines
+    const data = buildRiskHistory(medicines, history);
 
-    const generateData = () => {
-        const data = [];
-        const baseRisk = 10;
-        const currentMeds = medicines.length;
+    if (!data || data.length === 0) {
+        return (
+            <motion.div
+                className="card risk-graph-card"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+            >
+                <div className="risk-header">
+                    <h3>AMR Risk Trend 📈</h3>
+                    <span className="risk-badge low">No Data</span>
+                </div>
+                <div className="empty-graph-state" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <p>Start tracking your medicines to see your risk trend over time.</p>
+                </div>
+            </motion.div>
+        );
+    }
 
-        // Simulate 6 months of history
-        for (let i = 0; i < 6; i++) {
-            let month = `Month ${i + 1}`;
-            // Trend: starts low, increases if current meds are high
-            let risk = baseRisk + (Math.random() * 10) + (i * currentMeds * 5);
-            if (risk > 100) risk = 100;
-            data.push({ name: month, risk: Math.round(risk) });
-        }
-        return data;
-    };
-
-    const data = generateData();
     const currentRisk = data[data.length - 1].risk;
 
     return (
@@ -36,7 +38,7 @@ const RiskGraph = ({ medicines }) => {
         >
             <div className="risk-header">
                 <h3>AMR Risk Trend 📈</h3>
-                <span className={`risk-badge ${currentRisk > 50 ? 'high' : 'low'}`}>
+                <span className={`risk-badge ${currentRisk >= 70 ? 'high' : currentRisk >= 40 ? 'medium' : 'low'}`}>
                     Current: {currentRisk}%
                 </span>
             </div>
@@ -52,7 +54,7 @@ const RiskGraph = ({ medicines }) => {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                         <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
                         <Tooltip
                             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}
                         />
@@ -67,7 +69,7 @@ const RiskGraph = ({ medicines }) => {
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
-            <p className="graph-note">Projected risk based on antibiotic usage frequency.</p>
+            <p className="graph-note">Calculated based on your actual medication history.</p>
         </motion.div>
     );
 };
