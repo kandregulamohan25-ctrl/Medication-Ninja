@@ -275,7 +275,7 @@ const LoadingScreen = () => (
 
 function App() {
   const [isAppLoading,   setIsAppLoading]   = useState(true);
-  const [showExperience, setShowExperience] = useState(true);
+  const [showExperience, setShowExperience] = useState(false);
 
   React.useEffect(() => {
     const t = setTimeout(() => setIsAppLoading(false), 2000);
