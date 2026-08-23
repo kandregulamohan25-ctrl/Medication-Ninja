@@ -5,7 +5,7 @@ import { buildRiskHistory } from '../utils/riskLogic';
 import './RiskGraph.css';
 
 const RiskGraph = ({ medicines, history = [] }) => {
-    // Generate real data based on history and active medicines
+    // Generate real data based on history and active medicines using the centralized risk engine
     const data = buildRiskHistory(medicines, history);
 
     if (!data || data.length === 0) {
@@ -69,7 +69,7 @@ const RiskGraph = ({ medicines, history = [] }) => {
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
-            <p className="graph-note">Calculated based on your actual medication history.</p>
+            <p className="graph-note">Trend reflects the application's medication-exposure risk indicator derived from recorded medication history.</p>
         </motion.div>
     );
 };

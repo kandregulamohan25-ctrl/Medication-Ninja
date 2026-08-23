@@ -28,29 +28,29 @@ const RiskAssessment = ({ medicines, history = [], baseRiskScore = 0 }) => {
             </div>
 
             <div className="risk-header" style={{ borderLeft: `6px solid ${assessment.color}` }}>
-                <h3>AMR Risk Level</h3>
+                <h3>AMR Risk Indicator</h3>
                 <span className="risk-badge" style={{ backgroundColor: assessment.color }}>
-                    {assessment.level} {isDoctorMode && assessment.score > 0 ? `(${assessment.score}/100)` : ''}
+                    {assessment.level} {isDoctorMode ? `(${assessment.score}/100)` : ''}
                 </span>
             </div>
 
             {isDoctorMode ? (
                 <div className="risk-content doctor-mode-content">
-                    <p><strong>Explanation:</strong></p>
-                    <ul>
-                        {assessment.messages.length > 0 ? assessment.messages.map((msg, idx) => (
-                            <li key={idx}>{msg}</li>
-                        )) : <li>No active risk factors detected.</li>}
-                    </ul>
-
-                    {assessment.level === 'High' && (
-                        <div className="alert-box">
-                            <strong>Warning: High Risk Detected.</strong> Elevated risk of developing antimicrobial resistance or disrupting the microbiome.
-                        </div>
+                    <p><strong>Risk Factors:</strong></p>
+                    {assessment.factors && assessment.factors.length > 0 ? (
+                        <ul className="factors-list">
+                            {assessment.factors.map((factor, idx) => (
+                                <li key={idx} style={{ marginBottom: '0.5rem' }}>
+                                    <strong>{factor.label} ({factor.contribution}):</strong> {factor.explanation}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>No elevated risk factors detected based on current exposure data.</p>
                     )}
 
-                    <div className="suggestion-box">
-                        <strong>Safer Behavior Suggestion:</strong> Ensure full course completion, strictly follow dosage intervals, and avoid prescribing the same antibiotic class repeatedly unless clinically necessary.
+                    <div className="scientific-disclaimer" style={{ marginTop: '1.5rem', fontSize: '0.8rem', color: 'var(--text-muted)', borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem' }}>
+                        <em>This is a medication-exposure-based screening indicator. It does not confirm antimicrobial resistance and should not replace microbiological susceptibility testing or clinical assessment.</em>
                     </div>
                 </div>
             ) : (
@@ -71,13 +71,9 @@ const RiskAssessment = ({ medicines, history = [], baseRiskScore = 0 }) => {
                         </div>
                     </div>
                     
-                    {assessment.score > 40 ? (
-                        <p style={{ color: assessment.color, fontWeight: '500' }}>
-                            Your current active courses have increased your resistance risk. Be sure to complete the full course as prescribed!
-                        </p>
-                    ) : (
-                        <p>Keep tracking your medicines to maintain a healthy ninja status!</p>
-                    )}
+                    <p style={{ color: assessment.score > 40 ? assessment.color : 'inherit', fontWeight: assessment.score > 40 ? '500' : 'normal' }}>
+                        Your current medication history indicates a {assessment.level.toLowerCase()} estimated antibiotic-exposure risk.
+                    </p>
                 </div>
             )}
         </div>

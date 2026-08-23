@@ -19,45 +19,88 @@ export const getClass = (name) => {
     return null;
 };
 
-export const calculateRisk = (medicines, history = [], baseRiskScore = 0) => {
-    let score = baseRiskScore;
+export const calculateRisk = (medicines = [], history = [], baseRiskScore = 0) => {
+    let score = baseRiskScore || 0;
     let messages = [];
+    let factors = [];
+
+    if (score > 0) {
+        factors.push({
+            label: "Baseline Risk",
+            contribution: `+${score}`,
+            explanation: "User's baseline exposure profile."
+        });
+    }
 
     const activeAntibiotics = medicines.map(m => ({ ...m, class: getClass(m.name) })).filter(m => m.class);
     const historyAntibiotics = history.map(m => ({ ...m, class: getClass(m.name) })).filter(m => m.class);
 
-    if (activeAntibiotics.length === 0) {
-        return { score: score, level: score >= 40 ? (score >= 70 ? 'High' : 'Medium') : 'Low', color: score >= 40 ? (score >= 70 ? 'var(--danger-color)' : 'var(--warning-color)') : 'var(--success-color)', messages: ['No active antibiotics detected.'] };
+    if (activeAntibiotics.length === 0 && historyAntibiotics.length === 0 && score === 0) {
+        return {
+            score: 0,
+            level: 'Low',
+            color: 'var(--success-color)',
+            messages: ['No antibiotic exposure detected.'],
+            factors: []
+        };
     }
 
     if (activeAntibiotics.length > 1) {
-        score += (activeAntibiotics.length - 1) * 20;
-        messages.push('Multiple active antibiotics detected. High risk of disruption to gut microbiome.');
+        const increment = (activeAntibiotics.length - 1) * 20;
+        score += increment;
+        messages.push('Multiple concurrent antibiotics detected.');
+        factors.push({
+            label: "Concurrent Exposure",
+            contribution: `+${increment}`,
+            explanation: "Multiple antibiotics are currently being tracked, indicating increased antibiotic exposure burden."
+        });
+    }
+
+    if (historyAntibiotics.length > 0) {
+        const increment = Math.min(historyAntibiotics.length * 5, 25);
+        score += increment;
+        messages.push('Historical antibiotic exposure detected.');
+        factors.push({
+            label: "Cumulative Exposure",
+            contribution: `+${increment}`,
+            explanation: `Previous exposure to ${historyAntibiotics.length} antibiotic courses detected in medication history.`
+        });
     }
 
     activeAntibiotics.forEach(med => {
-        if (parseInt(med.duration || 0) < 5) {
-            score += 30;
-            messages.push(`Incomplete antibiotic course increases resistance risk.`);
-        }
-
+        // Record exposure duration fact without making unsupported clinical claims
+        const durationStr = med.duration ? `${med.duration} days` : 'unspecified duration';
+        
         // Check history for repeated use
         const sameMeds = historyAntibiotics.filter(h => h.name.toLowerCase() === med.name.toLowerCase());
         const sameClassMeds = historyAntibiotics.filter(h => h.class === med.class && h.name.toLowerCase() !== med.name.toLowerCase());
 
         if (sameMeds.length > 0) {
-            score += 25;
-            messages.push(`Frequent use of ${med.name} detected.`);
+            score += 15;
+            messages.push(`Repeated exposure to ${med.name} detected.`);
+            factors.push({
+                label: "Repeated Exposure",
+                contribution: "+15",
+                explanation: `Repeated exposure to ${med.name} was detected in medication history.`
+            });
         } else if (sameClassMeds.length > 0) {
-            score += 20;
-            messages.push(`Repeated use of ${med.class}-class antibiotics detected.`);
+            score += 10;
+            messages.push(`Previous exposure to the ${med.class} class detected.`);
+            factors.push({
+                label: "Class Re-exposure",
+                contribution: "+10",
+                explanation: `Previous exposure to the ${med.class} class was detected.`
+            });
         }
     });
 
     score = Math.min(Math.round(score), 100);
+    score = Math.max(0, score); // clamp between 0 and 100
 
-    // Deduplicate messages
     messages = [...new Set(messages)];
+    if (messages.length === 0) {
+        messages.push('No significant risk factors detected based on current exposure.');
+    }
 
     let level = 'Low';
     let color = 'var(--success-color)';
@@ -65,54 +108,71 @@ export const calculateRisk = (medicines, history = [], baseRiskScore = 0) => {
         level = 'High';
         color = 'var(--danger-color)';
     } else if (score >= 40) {
-        level = 'Medium';
+        level = 'Moderate';
         color = 'var(--warning-color)';
     }
 
-    return { score, level, color, messages };
+    return { score, level, color, messages, factors };
 };
 
-export const buildRiskHistory = (medicines = [], history = []) => {
+export const buildRiskHistory = (medicines = [], history = [], baseRiskScore = 0) => {
     const data = [];
-    let runningRisk = 10; // base risk
     
-    // Sort history by id (assuming id is timestamp, so ascending)
-    const sortedHistory = [...history].sort((a, b) => a.id - b.id);
+    // Sort history by chronological order if possible
+    // Supabase often returns created_at or id. Let's try to parse date safely.
+    const getSortValue = (item) => {
+        if (item.created_at) return new Date(item.created_at).getTime();
+        if (item.completed_at) return new Date(item.completed_at).getTime();
+        if (!isNaN(item.id)) return parseInt(item.id, 10);
+        return 0;
+    };
+
+    const sortedHistory = [...history].sort((a, b) => getSortValue(a) - getSortValue(b));
     
-    // If no history and no active meds, return empty
     if (sortedHistory.length === 0 && medicines.length === 0) {
         return [];
     }
 
-    // Process history incrementally
+    // Build timeline cumulatively
+    let accumulatedHistory = [];
+
     sortedHistory.forEach((med, index) => {
-        const isAntibiotic = getClass(med.name) !== null;
-        if (isAntibiotic) {
-            let increment = 15;
-            if (parseInt(med.duration || 0) < 5) increment += 10; // penalty for short course
-            runningRisk += increment;
-        } else {
-            // General meds slightly increase risk, or naturally decay
-            runningRisk = Math.max(10, runningRisk - 2); 
+        accumulatedHistory.push(med);
+        
+        // Calculate risk as if this was the state at that point in time
+        // Note: For simplicity in the graph, we treat the accumulated history as past exposure
+        // We will assume no active meds during this snapshot to isolate historical progression
+        const stepRisk = calculateRisk([], accumulatedHistory, baseRiskScore);
+        
+        // Try to get a readable date
+        let dateStr = null;
+        const potentialDates = [med.completed_at, med.created_at, typeof med.id === 'number' ? med.id : null];
+        for (let d of potentialDates) {
+            if (d) {
+                const parsed = new Date(d);
+                if (!isNaN(parsed.getTime())) {
+                    dateStr = parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    break;
+                }
+            }
         }
         
-        runningRisk = Math.min(runningRisk, 100);
-        
-        // Use a readable date or just relative entry number
-        const dateStr = new Date(med.id).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        if (!dateStr || dateStr === "Invalid Date") {
+            dateStr = `Entry ${index + 1}`;
+        }
         
         data.push({
-            name: dateStr !== "Invalid Date" ? dateStr : `Entry ${index + 1}`,
-            risk: Math.round(runningRisk)
+            name: dateStr,
+            risk: stepRisk.score
         });
     });
 
-    // Add current state based on active meds
-    const activeRisk = calculateRisk(medicines, history, runningRisk).score;
+    // Final state based on actual active meds + full history
+    const activeRisk = calculateRisk(medicines, history, baseRiskScore);
     if (medicines.length > 0 || data.length === 0) {
         data.push({
             name: 'Now',
-            risk: Math.round(activeRisk)
+            risk: activeRisk.score
         });
     }
 
