@@ -1,20 +1,39 @@
-﻿export const ANTIBIOTIC_CLASSES = {
-    penicillin: ['amoxicillin', 'penicillin', 'augmentin', 'ampicillin', 'amoxil'],
-    macrolide: ['azithromycin', 'clarithromycin', 'erythromycin', 'zithromax'],
-    fluoroquinolone: ['ciprofloxacin', 'levofloxacin', 'moxifloxacin', 'cipro'],
-    tetracycline: ['doxycycline', 'tetracycline', 'minocycline', 'vibramycin'],
-    cephalosporin: ['cephalexin', 'ceftriaxone', 'cefdinir', 'keflex'],
-    nitroimidazole: ['metronidazole', 'flagyl'],
-    lincosamide: ['clindamycin', 'cleocin'],
-    sulfonamide: ['sulfamethoxazole', 'trimethoprim', 'bactrim'],
-    glycopeptide: ['vancomycin']
-};
+﻿export const ANTIBIOTIC_KNOWLEDGE_BASE = [
+    { class: 'Penicillin', aliases: ['amoxicillin', 'penicillin', 'augmentin', 'ampicillin', 'amoxil', 'clavulanic acid'] },
+    { class: 'Macrolide', aliases: ['azithromycin', 'clarithromycin', 'erythromycin', 'zithromax'] },
+    { class: 'Fluoroquinolone', aliases: ['ciprofloxacin', 'levofloxacin', 'moxifloxacin', 'cipro', 'norfloxacin'] },
+    { class: 'Tetracycline', aliases: ['doxycycline', 'tetracycline', 'minocycline', 'vibramycin'] },
+    { class: 'Cephalosporin', aliases: ['cephalexin', 'ceftriaxone', 'cefdinir', 'keflex', 'cefixime'] },
+    { class: 'Nitroimidazole', aliases: ['metronidazole', 'flagyl', 'tinidazole'] },
+    { class: 'Lincosamide', aliases: ['clindamycin', 'cleocin'] },
+    { class: 'Sulfonamide', aliases: ['sulfamethoxazole', 'trimethoprim', 'bactrim'] },
+    { class: 'Glycopeptide', aliases: ['vancomycin'] },
+    { class: 'Nitrofuran', aliases: ['nitrofurantoin', 'macrobid', 'macrodantin'] }
+];
+
+const NON_ANTIBIOTICS = [
+    'paracetamol', 'ibuprofen', 'cetirizine', 'omeprazole', 'pantoprazole', 'dolo 650', 'dolo'
+];
 
 export const getClass = (name) => {
-    if (!name) return null;
-    const lowerName = name.toLowerCase();
-    for (const [cls, drugs] of Object.entries(ANTIBIOTIC_CLASSES)) {
-        if (drugs.some(d => lowerName.includes(d))) return cls;
+    if (!name || typeof name !== 'string') return null;
+    const normalized = name.toLowerCase().trim();
+    
+    // Explicit known non-antibiotics
+    if (NON_ANTIBIOTICS.some(na => {
+        const regex = new RegExp('(\\b|^)' + na + '(\\b|$)', 'i');
+        return regex.test(normalized);
+    })) {
+        return null;
+    }
+
+    for (const kb of ANTIBIOTIC_KNOWLEDGE_BASE) {
+        if (kb.aliases.some(alias => {
+            const regex = new RegExp('(\\b|^)' + alias + '(\\b|$)', 'i');
+            return regex.test(normalized);
+        })) {
+            return kb.class;
+        }
     }
     return null;
 };
