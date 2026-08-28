@@ -1,85 +1,153 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+﻿import React, { useState, useEffect, createContext, useContext } from 'react';
+import { supabase } from '../utils/supabaseClient';
 
 const UserContext = createContext();
 
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-    // Temporary Guest Session: bypasses login screen and onboarding to guarantee mobile access
-    const [user, setUser] = useState({
-        name: 'Guest Explorer',
-        avatar: 'ninja-happy.png',
-        level: 1,
-        streak: 1,
-        onboardingCompleted: true,
-        baseRiskScore: 0,
-        lastLogin: new Date().toISOString()
-    });
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        try {
-            const savedUser = localStorage.getItem('medication_ninja_user');
-            if (savedUser) {
-                const parsedUser = JSON.parse(savedUser);
-                if (!parsedUser) return;
+        let isMounted = true;
 
-                // Streak Logic
-                const now = new Date();
-                const lastLogin = parsedUser.lastLogin ? new Date(parsedUser.lastLogin) : new Date();
-                const diffHours = Math.abs(now - lastLogin) / 36e5;
-
-                let newStreak = parsedUser.streak || 1;
-
-                if (diffHours >= 24 && diffHours < 48) {
-                    newStreak += 1;
-                } else if (diffHours >= 48) {
-                    newStreak = 1;
+        const initializeAuth = async () => {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                if (session?.user) {
+                    await handleUserSession(session.user);
+                } else {
+                    if (isMounted) setUser(null);
                 }
-
-                const updatedUser = { ...parsedUser, lastLogin: now.toISOString(), streak: newStreak };
-                setUser(updatedUser);
-                localStorage.setItem('medication_ninja_user', JSON.stringify(updatedUser));
+            } catch (err) {
+                console.error("Auth init error:", err.message);
+                if (isMounted) setUser(null);
+            } finally {
+                if (isMounted) setLoading(false);
             }
-        } catch (error) {
-            console.warn("Storage restricted (e.g. Mobile Safari / Incognito). Running in temporary session mode.", error);
-        }
+        };
+
+        initializeAuth();
+
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user) {
+                await handleUserSession(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+                localStorage.removeItem('medication_ninja_user');
+            }
+        });
+
+        return () => {
+            isMounted = false;
+            authListener?.subscription?.unsubscribe();
+        };
     }, []);
 
-    const login = (name) => {
-        const newUser = {
-            name,
-            avatar: 'ninja-happy.png',
-            level: 1,
-            streak: 1,
-            onboardingCompleted: true,
-            baseRiskScore: 0,
-            lastLogin: new Date().toISOString()
-        };
-        setUser(newUser);
+    const handleUserSession = async (authUser) => {
         try {
-            localStorage.setItem('medication_ninja_user', JSON.stringify(newUser));
-        } catch (e) {
-            console.warn("Could not save to localStorage. Session is temporary.");
+            // Check if profile exists
+            let { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', authUser.id)
+                .single();
+
+            // If table doesn't exist yet (PGRST205) or row doesn't exist, handle gracefully
+            if (error && error.code === 'PGRST116') {
+                // No rows found, create one
+                const newProfile = {
+                    id: authUser.id,
+                    full_name: authUser.email.split('@')[0],
+                    age: null,
+                    gender: null,
+                    avatar_url: 'ninja-happy.png'
+                };
+                const { data: inserted, error: insertError } = await supabase
+                    .from('profiles')
+                    .insert([newProfile])
+                    .select()
+                    .single();
+                
+                if (insertError) throw insertError;
+                profile = inserted;
+            } else if (error) {
+                console.error("Profile fetch error:", error.message);
+                // Fallback to basic auth user info if profiles table is missing temporarily
+                profile = {
+                    id: authUser.id,
+                    full_name: authUser.email.split('@')[0],
+                    avatar_url: 'ninja-happy.png'
+                };
+            }
+
+            // Streak Logic
+            const now = new Date();
+            let newStreak = 1;
+            const savedUserStr = localStorage.getItem('medication_ninja_user');
+            if (savedUserStr) {
+                try {
+                    const parsed = JSON.parse(savedUserStr);
+                    if (parsed.id === authUser.id) {
+                        const lastLogin = parsed.lastLogin ? new Date(parsed.lastLogin) : new Date();
+                        const diffHours = Math.abs(now - lastLogin) / 36e5;
+                        if (diffHours >= 24 && diffHours < 48) newStreak = (parsed.streak || 1) + 1;
+                        else if (diffHours < 24) newStreak = parsed.streak || 1;
+                    }
+                } catch (e) {}
+            }
+
+            const combinedUser = {
+                ...profile,
+                email: authUser.email,
+                streak: newStreak,
+                lastLogin: now.toISOString(),
+                onboardingCompleted: true,
+                baseRiskScore: 0
+            };
+
+            setUser(combinedUser);
+            localStorage.setItem('medication_ninja_user', JSON.stringify(combinedUser));
+
+        } catch (err) {
+            console.error("Session handler error:", err.message);
+            // Fallback so user isn't permanently locked out of UI
+            setUser({ id: authUser.id, email: authUser.email, full_name: authUser.email.split('@')[0], onboardingCompleted: true });
         }
+    };
+
+    const login = async (email, password, isSignUp) => {
+        if (isSignUp) {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) throw error;
+            return data;
+        } else {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            return data;
+        }
+    };
+
+    const logout = async () => {
+        await supabase.auth.signOut();
     };
 
     const completeOnboarding = (baseRiskScore) => {
-        const updatedUser = { ...user, onboardingCompleted: true, baseRiskScore };
-        setUser(updatedUser);
-        try {
-            localStorage.setItem('medication_ninja_user', JSON.stringify(updatedUser));
-        } catch(e) {}
+        if (user) setUser({ ...user, baseRiskScore });
     };
 
-    const logout = () => {
-        setUser(null); // This will re-trigger the login screen if they explicitly click logout
-        try {
-            localStorage.removeItem('medication_ninja_user');
-        } catch(e) {}
-    }
+    const updateProfileLocally = (updatedData) => {
+        if (user) {
+            const newUser = { ...user, ...updatedData };
+            setUser(newUser);
+            localStorage.setItem('medication_ninja_user', JSON.stringify(newUser));
+        }
+    };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, completeOnboarding }}>
+        <UserContext.Provider value={{ user, loading, login, logout, completeOnboarding, updateProfileLocally }}>
             {children}
         </UserContext.Provider>
     );

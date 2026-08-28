@@ -17,6 +17,7 @@ import Stories from "./components/Stories";
 import History from "./components/History";
 import LifetimeStats from "./components/LifetimeStats";
 import Experience from "./components/Experience";
+import ProfileScreen from "./components/ProfileScreen";
 import { UserProvider, useUser } from "./components/UserContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { calculateRisk } from "./utils/riskLogic";
@@ -38,7 +39,7 @@ const staggerItem = {
 };
 
 const Dashboard = () => {
-  const { user, login, completeOnboarding } = useUser();
+  const { user, loading: authLoading, login, completeOnboarding } = useUser();
   const [medicines, setMedicines] = useState([]);
   const [history,   setHistory]   = useState([]);
   const [loading,   setLoading]   = useState(true);
@@ -46,80 +47,100 @@ const Dashboard = () => {
 
   const [playPop] = useSound(SOUND_POP);
 
-  React.useEffect(() => { if (user) fetchData(); }, [user]);
+  React.useEffect(() => { 
+      if (user && user.id) {
+          fetchData(); 
+      }
+  }, [user]);
 
   const fetchData = async () => {
+    if (!user || !user.id) return;
     try {
       setLoading(true);
-      const { data: medsData, error: medsError } = await supabase.from("medicines").select("*");
+      const { data: medsData, error: medsError } = await supabase.from("medicines").select("*").eq("user_id", user.id);
       if (medsError) throw medsError;
-      const { data: histData, error: histError } = await supabase.from("history").select("*");
+      const { data: histData, error: histError } = await supabase.from("history").select("*").eq("user_id", user.id);
       if (histError) throw histError;
+      
       const finalMeds = medsData || [];
       const finalHist = histData || [];
       setMedicines(finalMeds);
       setHistory(finalHist);
-      localStorage.setItem("ninja_medicines", JSON.stringify(finalMeds));
-      localStorage.setItem("ninja_history",   JSON.stringify(finalHist));
+      
+      // We still backup to localStorage to prevent data loss on connection drop, 
+      // but the key should ideally be user specific if we wanted true offline isolation. 
+      // Since we just need a cache, we'll prefix it with user id.
+      localStorage.setItem(`ninja_medicines_${user.id}`, JSON.stringify(finalMeds));
+      localStorage.setItem(`ninja_history_${user.id}`,   JSON.stringify(finalHist));
     } catch (error) {
       console.error("Supabase fetch error:", error?.message || error);
-      setMedicines(JSON.parse(localStorage.getItem("ninja_medicines")) || []);
-      setHistory(JSON.parse(localStorage.getItem("ninja_history"))   || []);
+      setMedicines(JSON.parse(localStorage.getItem(`ninja_medicines_${user.id}`)) || []);
+      setHistory(JSON.parse(localStorage.getItem(`ninja_history_${user.id}`))   || []);
     } finally {
       setLoading(false);
     }
   };
 
   const addMedicine = async (medicine) => {
-    const newMed = { ...medicine, id: Date.now() };
-    const updatedMeds = [...(medicines || []), newMed];
+    if (!user || !user.id) return;
+    const newMed = { ...medicine, id: Date.now(), user_id: user.id };
+    const updatedMeds = [...medicines, newMed];
     setMedicines(updatedMeds);
-    localStorage.setItem("ninja_medicines", JSON.stringify(updatedMeds));
+    localStorage.setItem(`ninja_medicines_${user.id}`, JSON.stringify(updatedMeds));
     playPop();
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     try {
       const { data, error } = await supabase.from("medicines").insert([newMed]).select();
-      if (error) throw error;
       if (data && data[0]?.id !== newMed.id) {
-        const final = updatedMeds.map(m => m.id === newMed.id ? data[0] : m);
-        setMedicines(final);
-        localStorage.setItem("ninja_medicines", JSON.stringify(final));
+        setMedicines(prev => prev.map(m => m.id === newMed.id ? data[0] : m));
       }
-    } catch (e) { console.error("Insert error:", e?.message); }
+    } catch (error) { console.error("Add error:", error?.message); }
   };
 
   const completeMedicine = async (id) => {
-    const med = (medicines || []).find(m => m.id === id);
+    if (!user || !user.id) return;
+    const med = medicines.find(m => m.id === id);
     if (!med) return;
-    const updatedHistory = [med, ...(history || [])];
-    const updatedMeds    = (medicines || []).filter(m => m.id !== id);
-    setHistory(updatedHistory); setMedicines(updatedMeds);
-    localStorage.setItem("ninja_history",   JSON.stringify(updatedHistory));
-    localStorage.setItem("ninja_medicines", JSON.stringify(updatedMeds));
+    
+    // Ensure history record has user_id
+    const historyRecord = { ...med, completed_at: new Date().toISOString(), user_id: user.id };
+    const updatedHistory = [historyRecord, ...history];
+    const updatedMeds    = medicines.filter(m => m.id !== id);
+    
+    setHistory(updatedHistory); 
+    setMedicines(updatedMeds);
+    localStorage.setItem(`ninja_history_${user.id}`,   JSON.stringify(updatedHistory));
+    localStorage.setItem(`ninja_medicines_${user.id}`, JSON.stringify(updatedMeds));
     playPop();
+    
     try {
-      await supabase.from("history").insert([med]);
-      await supabase.from("medicines").delete().eq("id", id);
+      await supabase.from("history").insert([historyRecord]);
+      await supabase.from("medicines").delete().eq("id", id).eq("user_id", user.id);
     } catch (e) { console.error("Complete error:", e?.message); }
   };
 
   const restoreMedicine = async (med) => {
-    const updatedMeds    = [...(medicines || []), med];
-    const updatedHistory = (history || []).filter(h => h.id !== med.id);
-    setMedicines(updatedMeds); setHistory(updatedHistory);
-    localStorage.setItem("ninja_medicines", JSON.stringify(updatedMeds));
-    localStorage.setItem("ninja_history",   JSON.stringify(updatedHistory));
+    if (!user || !user.id) return;
+    const restoreRecord = { ...med, user_id: user.id };
+    const updatedMeds    = [...medicines, restoreRecord];
+    const updatedHistory = history.filter(h => h.id !== med.id);
+    
+    setMedicines(updatedMeds); 
+    setHistory(updatedHistory);
+    localStorage.setItem(`ninja_medicines_${user.id}`, JSON.stringify(updatedMeds));
+    localStorage.setItem(`ninja_history_${user.id}`,   JSON.stringify(updatedHistory));
+    
     try {
-      await supabase.from("medicines").insert([med]);
-      await supabase.from("history").delete().eq("id", med.id);
+      await supabase.from("medicines").insert([restoreRecord]);
+      await supabase.from("history").delete().eq("id", med.id).eq("user_id", user.id);
     } catch (e) { console.error("Restore error:", e?.message); }
   };
 
   const deleteHistory = async (id) => {
-    const updated = (history || []).filter(h => h.id !== id);
+    if (!user || !user.id) return;
+    const updated = history.filter(h => h.id !== id);
     setHistory(updated);
-    localStorage.setItem("ninja_history", JSON.stringify(updated));
-    try { await supabase.from("history").delete().eq("id", id); }
+    localStorage.setItem(`ninja_history_${user.id}`, JSON.stringify(updated));
+    try { await supabase.from("history").delete().eq("id", id).eq("user_id", user.id); }
     catch (e) { console.error("Delete error:", e?.message); }
   };
 
@@ -128,7 +149,8 @@ const Dashboard = () => {
     return calculateRisk(medicines, history, user?.baseRiskScore || 0).level;
   };
 
-  if (!user) return <LoginScreen onLogin={login} />;
+  if (authLoading) return <LoadingScreen />;
+  if (!user) return <LoginScreen />;
   if (!user.onboardingCompleted) return <Onboarding onComplete={completeOnboarding} />;
 
   return (
@@ -142,7 +164,7 @@ const Dashboard = () => {
               <motion.div variants={staggerContainer} initial="initial" animate="animate">
 
                 <motion.section className="hero-section" variants={staggerItem}>
-                  <h1 className="hero-title">Welcome, {user?.name || "Ninja"}!</h1>
+                  <h1 className="hero-title">Welcome, {user?.full_name || "Ninja"}!</h1>
                   <p className="hero-subtitle">Master your health. Defeat the resistance.</p>
                 </motion.section>
 
@@ -157,10 +179,10 @@ const Dashboard = () => {
                 </motion.div>
 
                 <motion.div className="medicines-list card" variants={staggerItem}>
-                  <h2 className="section-heading">Your Inventory 🎒</h2>
+                  <h2 className="section-heading">Your Inventory 💊</h2>
                   {medicines.length === 0 ? (
                     <motion.div className="empty-state" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                      <div className="empty-icon">🥷✨</div>
+                      <div className="empty-icon">🛡️</div>
                       <h3>You are on standby, Ninja!</h3>
                       <p>No medicines yet. Start your first mission.</p>
                       <button className="btn btn-primary" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
@@ -182,7 +204,7 @@ const Dashboard = () => {
                             <div className="med-actions">
                               <button className="btn-complete" onClick={() => completeMedicine(med.id)}
                                 title="Complete & Archive" aria-label={`Complete ${med.name}`}>
-                                ✅
+                                ✔
                               </button>
                             </div>
                           </motion.li>
@@ -204,7 +226,7 @@ const Dashboard = () => {
                 <p className="page-subtitle">Your antibiotic resistance risk and body impact analysis</p>
               </section>
               <div className="insights-grid">
-                <RiskGraph medicines={medicines} />
+                <RiskGraph medicines={medicines} history={history} />
                 <BodyMap medicines={medicines} />
                 <LifetimeStats history={history} />
               </div>
@@ -218,12 +240,19 @@ const Dashboard = () => {
           {currentPage === "learn" && (
             <motion.div key="learn" {...pageTransition}>
               <section className="page-header">
-                <h1 className="page-title">📚 Knowledge Dojo</h1>
+                <h1 className="page-title">📜 Knowledge Dojo</h1>
                 <p className="page-subtitle">Learn about antibiotic resistance and how to protect yourself</p>
               </section>
               <Remedies medicines={medicines} />
               <Stories />
               <EducationSection />
+            </motion.div>
+          )}
+
+          {/* ===== PROFILE ===== */}
+          {currentPage === "profile" && (
+            <motion.div key="profile" {...pageTransition}>
+              <ProfileScreen />
             </motion.div>
           )}
 
@@ -250,7 +279,7 @@ const Dashboard = () => {
         <button className={`tab-btn ${currentPage === "learn" ? "active" : ""}`}
           onClick={() => { setCurrentPage("learn"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
           aria-label="Learn about AMR" aria-current={currentPage === "learn" ? "page" : undefined}>
-          <span className="tab-icon" aria-hidden="true">📚</span>
+          <span className="tab-icon" aria-hidden="true">📜</span>
           <span className="tab-label">Learn</span>
         </button>
       </nav>

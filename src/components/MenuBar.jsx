@@ -57,12 +57,13 @@ const MenuBar = ({ darkMode, toggleTheme, currentPage, onNavigate, medicines = [
 
                             <div className="menu-header">
                                 <span className="menu-logo">🥷 Ninja Scroll</span>
-                                <button className="btn-close-menu" onClick={toggleOpen} aria-label="Close menu">✕</button>
+                                <button className="btn-close-menu" onClick={toggleOpen} aria-label="Close menu">×</button>
                             </div>
 
                             <div className="user-profile-section">
-                                <div className="avatar-circle">{user?.name?.charAt(0)?.toUpperCase() || "N"}</div>
-                                <h3 className="user-name">{user?.name || "Ninja"}</h3>
+                                <div className="avatar-circle">{user?.full_name?.charAt(0)?.toUpperCase() || "N"}</div>
+                                <h3 className="user-name">{user?.full_name || "Ninja"}</h3>
+                                <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', marginTop: '-5px', marginBottom: '10px' }}>{user?.email}</p>
 
                                 <div className="ninja-stats-panel">
                                     <div className="stats-row-top">
@@ -95,10 +96,11 @@ const MenuBar = ({ darkMode, toggleTheme, currentPage, onNavigate, medicines = [
                             <nav className="menu-nav" aria-label="Sidebar navigation">
                                 <button className={`menu-item ${currentPage === "home" ? "active" : ""}`} onClick={() => handleNavigate("home")}>🏠 Home</button>
                                 <button className={`menu-item ${currentPage === "insights" ? "active" : ""}`} onClick={() => handleNavigate("insights")}>📊 Health Insights</button>
-                                <button className={`menu-item ${currentPage === "learn" ? "active" : ""}`} onClick={() => handleNavigate("learn")}>📚 Knowledge Dojo</button>
+                                <button className={`menu-item ${currentPage === "learn" ? "active" : ""}`} onClick={() => handleNavigate("learn")}>📜 Knowledge Dojo</button>
+                                <button className={`menu-item ${currentPage === "profile" ? "active" : ""}`} onClick={() => handleNavigate("profile")}>👤 My Profile</button>
                                 <div className="divider" />
                                 <button className="menu-item" onClick={toggleTheme}>{darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}</button>
-                                <button className="menu-item" onClick={handleExport}>📄 Export Doctor Report</button>
+                                <button className="menu-item" onClick={handleExport}>📋 Export Doctor Report</button>
                             </nav>
 
                             <div className="menu-footer">
